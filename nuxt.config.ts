@@ -2,7 +2,7 @@
 export default defineNuxtConfig({
   compatibilityDate: '2024-11-05',
   devtools: { enabled: true },
-  modules: ['nuxt-icons', '@vueuse/nuxt', 'vuetify-nuxt-module'],
+  modules: ['nuxt-icons', '@vueuse/nuxt', 'vuetify-nuxt-module', '@pinia/nuxt'],
   plugins: [
     '~/plugins/popper.js',
     '~/plugins/modal.js',
