@@ -1,0 +1,83 @@
+@mixin desktop-only {
+  @media (min-width: 1025px) {
+    @content
+  }
+}
+
+@mixin tablet {
+  @media (max-width: 1024px) {
+    @content
+  }
+}
+
+@mixin mobile {
+  @media (max-width: 600px) {
+    @content
+  }
+}
+
+@mixin a-reset {
+  text-decoration: none;
+  color: inherit;
+}
+
+@mixin input-reset {
+  width: 100%;
+  outline: none;
+  color: #fff;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+
+  &:hover,
+  &:active,
+  &:focus {
+    border: 1px solid rgba(255, 255, 255, 0.2);
+  }
+
+  @include placeholder {
+    color: rgba(255, 255, 255, .5);
+  }
+}
+
+// Sets focus effect only for tab, but not click
+@mixin focus {
+  @supports (contain: none) {
+    &:focus-visible {
+      @content;
+    }
+  }
+
+  /* Safari & IE11 */
+  @supports not (contain: none) {
+    &:focus {
+      @content;
+    }
+  }
+}
+
+@mixin button-reset {
+  padding: 0;
+  border: 0;
+  background: none;
+  outline: none;
+  cursor: pointer;
+}
+
+@mixin placeholder {
+
+  &::-webkit-input-placeholder {
+    @content;
+  }
+
+  &::-moz-placeholder {
+    @content;
+  }
+
+  &:-moz-placeholder {
+    @content;
+  }
+
+  &:-ms-input-placeholder {
+    @content;
+  }
+}

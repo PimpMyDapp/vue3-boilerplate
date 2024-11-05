@@ -1,0 +1,103 @@
+@use "_modals.scss";
+@use "design-system/main";
+@use "design-system/vars";
+
+* {
+  font-family: Menlo, sans-serif;
+  box-sizing: border-box;
+}
+
+html,
+body,
+#__nuxt {
+  height: 100%;
+  background: #000;
+}
+
+.root-page {
+  height: 100%;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+.main-container {
+  max-width: 1180px;
+  width: 100%;
+  padding: 0 40px;
+  margin: 0 auto;
+}
+
+.title-block {
+  .order-number {
+    margin-bottom: 20px;
+    color: vars.$white-500;
+  }
+
+  h2,
+  h1 {
+    margin: 0;
+    text-transform: uppercase;
+
+    .slash {
+      color: vars.$white-500;
+    }
+  }
+}
+
+.linear-item {
+  margin-top: 265px;
+}
+
+.v-parallax {
+  img {
+    transition: transform .4s;
+  }
+}
+/**
+* ----------------------------------------
+* animation focus-in-expand-fwd
+* ----------------------------------------
+*/
+@keyframes text-focus-in {
+  0% {
+    -webkit-filter: blur(12px);
+    filter: blur(12px);
+    opacity: 0;
+  }
+  100% {
+    -webkit-filter: blur(0px);
+    filter: blur(0px);
+    opacity: 1;
+  }
+}
+
+@keyframes roll-anim {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+@include tablet {
+  .main-container {
+    padding: 0 40px;
+  }
+
+  .linear-item {
+    margin-top: 165px;
+  }
+}
+
+@include mobile {
+  .main-container {
+    padding: 0 16px;
+  }
+
+  .linear-item {
+    margin-top: 100px;
+  }
+}

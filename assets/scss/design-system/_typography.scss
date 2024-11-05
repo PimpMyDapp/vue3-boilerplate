@@ -1,0 +1,79 @@
+@use "sass:map";
+// size - in px
+// fatness - regular/bold
+@mixin get_typography($size, $fatness: null) {
+  font-family: calc_font_family($size, $fatness);
+  font-size: #{$size}px;
+  line-height: calc_line_height($size);
+  font-weight: calc_fatness($size, $fatness);
+  color: #fff;
+}
+
+@function calc_font_family($size, $fatness) {
+  $bold: Menlo, sans-serif;
+  $regular: Menlo, sans-serif;
+
+  @if ($fatness == null) { // this condition sets default font-family for each font-size
+    $fatness-default: map.get((
+            40: $bold,
+            36: $bold,
+            32: $bold,
+            28: $bold,
+            24: $bold,
+            20: $bold,
+            18: $regular,
+            14: $regular,
+            12: $regular,
+    ), $size);
+    @return $fatness-default;
+  } @else if ($fatness == "regular") {
+    @return $regular;
+  } @else {
+    @return $bold;
+  }
+}
+
+@function calc_fatness($size, $fatness) {
+  // If font-weight is out of the system, than setting default = 400/normal
+  @if $fatness == null { // this condition sets default font-weight for each font-size
+    $fatness-default: map.get((
+            40: 700,
+            36: 700,
+            32: 700,
+            28: 700,
+            24: 700,
+            20: 700,
+            18: 400,
+            14: 400,
+            12: 400,
+    ), $size);
+    @return $fatness-default;
+  } @else if($fatness == "bold") {
+    @return 700;
+  } @else {
+    @return 400;
+  }
+}
+
+@function calc_line_height($size) {
+  $line-height: map.get((
+          40: 120%,
+          36: 120%,
+          32: 120%,
+          28: 120%,
+          24: 120%,
+          20: 120%,
+          18: 160%,
+          14: 160%,
+          12: 160%,
+  ), $size);
+
+  // If font-weight is out of the system, than setting default line-height = font-size
+  @if $line-height == null {
+    @warn "font size #{$size}px - is not a part of design system";
+
+    @return 100%;
+  }
+
+  @return #{$line-height};
+}

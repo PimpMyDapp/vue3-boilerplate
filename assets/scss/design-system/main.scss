@@ -1,0 +1,57 @@
+@use "../mixins" as *;
+@use "vars";
+@use "typography";
+
+h1 {
+  @include typography.get_typography(40);
+  text-transform: uppercase;
+}
+
+h2 {
+  @include typography.get_typography(36);
+  text-transform: uppercase;
+}
+
+h3 {
+  @include typography.get_typography(32);
+  text-transform: uppercase;
+}
+
+h4 {
+  @include typography.get_typography(24);
+  text-transform: uppercase;
+}
+
+.text-lg {
+  @include typography.get_typography(18);
+  text-transform: uppercase;
+}
+
+.text-md {
+  @include typography.get_typography(14);
+  text-transform: uppercase;
+}
+
+.text-sm {
+  padding-top: 4px;
+  @include typography.get_typography(12);
+  text-transform: uppercase;
+}
+
+@include mobile {
+  h1 {
+    @include typography.get_typography(32);
+  }
+
+  h2 {
+    @include typography.get_typography(28);
+  }
+
+  h3 {
+    @include typography.get_typography(24);
+  }
+
+  h4 {
+    @include typography.get_typography(20);
+  }
+}
