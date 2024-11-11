@@ -2,7 +2,7 @@
 
 import { defineStore } from 'pinia';
 
-export const useServiceStore = defineStore("serviceStore", {
+export const useTimersStore = defineStore("serviceStore", {
     state: () => {
         return {
             nowIntervalId: 0,

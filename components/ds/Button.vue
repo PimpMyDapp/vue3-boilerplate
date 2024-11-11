@@ -9,7 +9,6 @@
         `_${color}`,
         ...(isSmall ? ['_small'] : []),
       ]"
-      @click="handleClick"
   >
     <span class="triangle-top" :style="`border-color: transparent ${triangleColor} transparent transparent`" />
     <span class="triangle-bottom" :style="`border-color: transparent transparent ${triangleColor} transparent`" />
@@ -60,15 +59,6 @@ export default {
       type: Boolean,
       default: false,
     }
-  },
-
-  methods: {
-    // Takes care of click event. Checking that disabled (or loading) button will not send click event!
-    handleClick() {
-      if (!this.disabled) {
-        this.$emit('click');
-      }
-    },
   },
 }
 </script>

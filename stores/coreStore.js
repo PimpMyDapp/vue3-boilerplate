@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia';
-import { useServiceStore } from '~/stores/serviceStore';
+import { useTimersStore } from '~/stores/_service/timersStore';
 
 export const useCoreStore = defineStore("coreStore", {
     state: () => {
@@ -14,12 +14,12 @@ export const useCoreStore = defineStore("coreStore", {
             this.is_active_tab = !document.hidden;
         },
         setNow() {
-            const _service = useServiceStore();
-            if (_service.nowIntervalId) {
-                clearInterval(_service.nowIntervalId);
-                _service.nowIntervalId = 0;
+            const _timers = useTimersStore();
+            if (_timers.nowIntervalId) {
+                clearInterval(_timers.nowIntervalId);
+                _timers.nowIntervalId = 0;
             }
-            _service.nowIntervalId = setInterval(() => {
+            _timers.nowIntervalId = setInterval(() => {
                 this.now = Math.round(new Date().getTime() / 1000);
             }, 1000)
         },

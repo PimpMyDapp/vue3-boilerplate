@@ -1,5 +1,6 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
+  ssr: false,
   compatibilityDate: '2024-11-05',
   devtools: { enabled: true },
   modules: ['nuxt-icons', '@vueuse/nuxt', 'vuetify-nuxt-module', '@pinia/nuxt'],
