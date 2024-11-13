@@ -15,24 +15,6 @@ export const usePromiseStore = defineStore("promiseStore", {
 
 	actions: {
 		/**
-		 * Internal function that creates promise and its resolver.
-		 * BE CAREFUL CALLING IT, IT WILL REWRITE EXISTING PROMISE.
-		 * @param name - name of the promise to create. Required.
-		 * @param callback - callback that will be called after fulfill.
-		 *
-		 * @private
-		 */
-		_createPromise(name, callback) {
-			this.resolvers[name] = null;
-
-			this.promises[name] = new Promise(resolve => {
-				this.resolvers[name] = resolve;
-			}).then(() => {
-				if (callback) callback();
-			})
-		},
-		
-		/**
 		 * Subscribe caller to a promise. If it's not exist, creates it.
 		 * If promise already fulfilled, returns it immediately.
 		 *
@@ -43,12 +25,7 @@ export const usePromiseStore = defineStore("promiseStore", {
 		 */
 		async waitFor(name, callback = null) {
 			if (!name) Error('Please provide promise name to subscribe!');
-			
-			// if no such resolver exist, create it.
-			if (!this.resolvers[name]) {
-				this._createPromise(name, callback);
-			}
-
+			this.createIfNotExist(name, callback);
 			return await this.promises[name];
 		},
 		
@@ -69,15 +46,48 @@ export const usePromiseStore = defineStore("promiseStore", {
 		 * Resolves a promise. But only if it exists.
 		 * Otherwise, will fall silently
 		 * @param name - Required. Name of the promise.
+		 * @param callback - Optional. will be called after promise resolve.
 		 */
-		resolve(name) {
+		resolve(name, callback) {
 			if (!name) Error('Please provide promise name to resolve!');
 			
 			if (this.resolvers[name]) {
 				this.resolvers[name]();
 			} else {
-				console.error(`promise ${name} is undefined. Can't fulfill!`)
+				this._createPromise(name, callback);
+				this.resolvers[name]();
 			}
+		},
+		
+		/**
+		 * Creates promise if it's not exist, so we can use it somewhere later.
+		 * @param name - Required. Name of the promise.
+		 * @param callback - Optional. will be called after promise resolve.
+		 */
+		createIfNotExist(name, callback = null) {
+			if (!this.resolvers[name]) {
+				this._createPromise(name, callback);
+			}
+		},
+		
+		/**
+		 * DO NOT USE EXTERNALLY!
+		 *
+		 * Internal function that creates promise and its resolver.
+		 * BE CAREFUL CALLING IT, IT WILL REWRITE EXISTING PROMISE.
+		 * @param name - name of the promise to create. Required.
+		 * @param callback - callback that will be called after fulfill.
+		 *
+		 * @private
+		 */
+		_createPromise(name, callback) {
+			this.resolvers[name] = null;
+			
+			this.promises[name] = new Promise(resolve => {
+				this.resolvers[name] = resolve;
+			}).then(() => {
+				if (callback) callback();
+			})
 		},
 	}
 })

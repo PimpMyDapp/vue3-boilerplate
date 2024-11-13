@@ -25,12 +25,13 @@
   </Head>
   <div class="root-page">
     <Header />
-    <h3 @click="subscribePromise">Is promise test exist: {{ testPromise }}</h3>
-    <ds-button @click="subscribePromise">
-      Subscribe to promise
+    <layout-network-changer />
+    <h3>Is promise test exist: {{ testPromise }}</h3>
+    <ds-button @click="test1">
+      Connect wallet
     </ds-button>
-    <ds-button @click="resolvePromise" tabindex="1">
-      resolve promise
+    <ds-button @click="test2" tabindex="1">
+      test signer
     </ds-button>
     <Footer />
   </div>
@@ -38,25 +39,19 @@
 
 <script setup>
 import { usePromiseStore } from '~/stores/_service/promisesStore';
+import { useWalletStore } from '~/stores/networkAndWallet/walletStore';
 
 const promises = usePromiseStore();
+const walletStore = useWalletStore();
 
 const localValue = ref(1);
 
-async function subscribePromise() {
-  console.log('promise test subscribed');
-  await promises.waitFor('test', () => {
-    console.log('hello from a callback!')
-    console.log('local value is: ', localValue);
-    console.log('add one');
-    localValue.value++
-    console.log('local value is: ', localValue);
-  });
-  console.log('promise test is fullfield!')
+async function test1() {
+  await walletStore.connectWallet();
 }
 
-function resolvePromise() {
-  promises.resolve('test');
+async function test2() {
+  await walletStore.testSigner();
 }
 </script>
 

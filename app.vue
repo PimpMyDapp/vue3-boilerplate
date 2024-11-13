@@ -4,7 +4,7 @@
 
 <script setup>
 
-import { preStartApp, startApp } from '~/composables/AppStarter';
+import { preStartApp, startApp } from '~/composables/appStarter';
 
 preStartApp();
 

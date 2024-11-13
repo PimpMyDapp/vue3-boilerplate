@@ -1,46 +1,48 @@
 <template>
-  <div class="pp-single-selector" v-click-outside="closeDropdown">
-    <div class="dropdown-selected" :class="{'_passive': passive}" @click="toggleDropdown">
-      <div class="dropdown-selected-zone">
-        <div v-if="!selected.value">
-          {{ placeholder }}
+  <div class="ds-single-selector">
+    <OnClickOutside @trigger="closeDropdown">
+      <div class="dropdown-selected" :class="{'_passive': passive}" @click="toggleDropdown">
+        <div class="dropdown-selected-zone">
+          <div v-if="!selected.value">
+            {{ placeholder }}
+          </div>
+          <div v-else class="selected-item">
+            <img v-if="selected.icon" class="icon" :src="selected.icon">
+            <span v-html="selected.text" />
+          </div>
         </div>
-        <div v-else class="selected-item">
-          <img v-if="selected.icon" class="icon" :src="selected.icon">
-          <span v-html="selected.text" />
+        <pp-icon
+            v-if="!passive"
+            class="arrow"
+            name="shevron-down-24"
+            :class="{'_active': isOpen}"
+        />
+      </div>
+      <div v-if="isOpen && !passive" class="dropdown-container" :style="freeDropdown ? 'width: auto; max-width: 100%;' : ''">
+        <div class="dropdown-menu">
+          <div
+              class="dropdown-item"
+              :class="{'_picked': option.value === selected.value}"
+              v-for="option in options"
+              :key="option.value"
+              @click="handleChange(option)"
+          >
+            <img v-if="option.icon" class="icon" :src="option.icon">
+            <span v-html="option.text"/>
+          </div>
         </div>
       </div>
-      <pp-icon
-          v-if="!passive"
-          class="arrow"
-          name="shevron-down-24"
-          :class="{'_active': isOpen}"
-      />
-    </div>
-    <div v-if="isOpen && !passive" class="dropdown-container" :style="freeDropdown ? 'width: auto; max-width: 100%;' : ''">
-      <div class="dropdown-menu">
-        <div
-            class="dropdown-item"
-            :class="{'_picked': option.value === selected.value}"
-            v-for="option in options"
-            :key="option.value"
-            @click="handleChange(option)"
-        >
-          <img v-if="option.icon" class="icon" :src="option.icon">
-          <span v-html="option.text"/>
-        </div>
-      </div>
-    </div>
+    </OnClickOutside>
   </div>
 </template>
 
 <script>
-import ClickOutside from 'vue-click-outside'
+import { OnClickOutside } from '@vueuse/components'
 
 export default {
   name: 'PPSingleSelector',
-  directives: {
-    ClickOutside,
+  components: {
+    OnClickOutside
   },
   props: {
     placeholder: {
@@ -106,3 +108,28 @@ export default {
   },
 };
 </script>
+
+<style lang="scss" scoped>
+.ds-single-selector {
+  z-index: 10;
+  position: relative;
+  color: white;
+}
+
+.dropdown-selected {
+  padding: 16px;
+  border: 1px solid $black-700;
+}
+
+.dropdown-menu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  background-color: $black;
+}
+
+.dropdown-item {
+  padding: 16px;
+  border-bottom: 1px solid $black-700;
+}
+</style>

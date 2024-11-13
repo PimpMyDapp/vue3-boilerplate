@@ -13,6 +13,7 @@
     "@pinata/sdk": "^2.1.0",
     "@pinia/nuxt": "^0.7.0",
     "@types/node": "^18.17.3",
+    "@vueuse/components": "^11.2.0",
     "@vueuse/core": "^11.1.0",
     "@vueuse/nuxt": "^11.1.0",
     "eslint": "^8.47.0",
@@ -25,7 +26,7 @@
   "dependencies": {
     "@mahdikhashan/vue3-click-outside": "^0.1.2",
     "axios": "^1.7.7",
-    "ethers": "^6.11.1",
+    "ethers": "5.7",
     "nuxt-icons": "^3.2.1",
     "swiper": "^11.0.6",
     "vue-final-modal": "^4.5.4",
