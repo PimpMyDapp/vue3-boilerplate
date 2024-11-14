@@ -4,7 +4,10 @@ import { markRaw } from 'vue';
 import {ethers, BigNumber, providers} from 'ethers';
 
 import { usePromiseStore } from '~/stores/_service/promisesStore';
-import { useWeb3Manager } from '~/stores/networkAndWallet/web3ManagmentStore';
+import { useChainStore } from '~/stores/networkAndWallet/chainManagementStore';
+import { useTimersStore } from '~/stores/_service/timersStore';
+
+import {numberToHex, hexToNumber} from '~/composables/blockchainHelpers';
 
 export const useWalletStore = defineStore("walletStore", {
     state: () => {
@@ -13,13 +16,20 @@ export const useWalletStore = defineStore("walletStore", {
             user_wallet: null,
             custom_wallet: useLocalStorage('custom-wallet', ''),
             last_user_wallet: null,
-            wrong_network: false,
-            wallet_loading: true,
             wallet_chain_id: null,
+
             provider: null,
             signer: null,
-            wallet_enabled: false,
+            
+            wrong_network: false,
+            wallet_loading: true,
         }
+    },
+
+    getters: {
+        getBrowserProvider() {
+            return window['ethereum'] ? window['ethereum'] : window['web3'] || {};
+        },
     },
 
     actions: {
@@ -46,9 +56,13 @@ export const useWalletStore = defineStore("walletStore", {
          */
         async checkConnectedWallet() {
             if (!window['ethereum']) return;
-            this.getWalletType();
-            this.provider = markRaw(new providers.Web3Provider(window['ethereum']));
 
+            const chainStore = useChainStore();
+            await this.getWalletType();
+
+            if (chainStore.site_chain_id !== this.wallet_chain_id) return; // if site and wallet chain differs - STOP!
+
+            this.provider = markRaw(new providers.Web3Provider(window['ethereum']));
             const accounts = await this.provider.listAccounts();
             if (accounts.length === 0) return;
             this.signer = markRaw(this.provider.getSigner());
@@ -61,8 +75,20 @@ export const useWalletStore = defineStore("walletStore", {
          * @returns {Promise<void>}
          */
         async connectWallet() {
-            // exit if ethereum not get injected
             if (!window['ethereum']) return;
+
+            const chainStore = useChainStore();
+            const timersStore = useTimersStore();
+
+            // Checks if site and wallet chains differs, and we must swap a site chain
+            if (this.wallet_chain_id !== chainStore.site_chain_id && !timersStore.networkIsChanging) {
+                timersStore.networkIsChanging = true;
+                await this.switchChain(chainStore.site_chain_id);
+                await this.connectWallet();
+                timersStore.networkIsChanging = false;
+                // recursive call was made, so that call must end.
+                return;
+            }
 
             // enable wallet connection
             try {
@@ -70,11 +96,6 @@ export const useWalletStore = defineStore("walletStore", {
                     await window['ethereum'].enable();
                     await this.checkConnectedWallet();
                 }
-
-                // save signer to store
-                this.signer = markRaw(this.provider.getSigner());
-                
-                this.wallet_enabled = true;
             } catch (e) {
                 console.error(e);
             }
@@ -83,41 +104,74 @@ export const useWalletStore = defineStore("walletStore", {
         /**
          * simulate wallet disconnect.
          *
-         * We cant actually control application, but we can change our data to make it look like logout!
+         * We can't control the wallet app, but we can change our data to make it look like logout!
          */
         disconnectWallet() {
             this.provider = null;
             this.signer = null;
             this.user_wallet = null;
-            this.wallet_chain_id = null;
-        },
-
-        async testSigner() {
-            console.log('testing signer...');
-            if (!this.wallet_enabled && this.user_wallet) {
-                this.connectWallet();
-            }
-            console.log(this.signer)
-            await this.signer.sendTransaction({
-                to: '',
-                value: BigNumber.from('1000000000000000'),
-            });
-            console.log('success!')
         },
         
-        // switchChain() {
-        //     await window['ethereum'].request({
-        //         method: 'wallet_switchEthereumChain',
-        //         params: [{ chainId }],
-        //     });
-        // },
+        /**
+         * Call this when want to switch to any other chain
+         * @param toChainId - should be a number represents another chain id
+         * @returns {Promise<void>}
+         */
+        async switchChain(toChainId) {
+            const chainStore = useChainStore();
+            const chainId = numberToHex(toChainId);
+            try {
+                console.log('wallet_switchEthereumChain', [{ chainId }]);
+                await window['ethereum'].request({
+                    method: 'wallet_switchEthereumChain',
+                    params: [{ chainId }],
+                });
+            } catch (switchError) {
+                // This error code indicates that the chain has not been added to MetaMask.
+                if (switchError.code === 4902) {
+                    const chainConfig = chainStore.network_list.find(item => item.networkId === +toChainId);
+                    const config = JSON.parse(JSON.stringify({
+                        method: 'wallet_addEthereumChain',
+                        params: [{
+                            chainId,
+                            chainName: chainConfig.title,
+                            blockExplorerUrls: [chainConfig.static.explorerUrl],
+                            rpcUrls: [chainConfig.static.publicRpc],
+                            nativeCurrency: chainConfig.static.nativeCurrency,
+                        }],
+                    }));
+                    console.log(config)
+                    try {
+                        await window['ethereum'].request(config);
+                    } catch (addError) {
+                        console.error('wallet_addEthereumChain failed', addError);
+                    }
+                } else {
+                    console.error('unknown wallet_switchEthereumChain failed', switchError);
+                }
+            }
+        },
         /**
          * Checks which type of wallet is currently connected or can be connected
          */
-        getWalletType() {
+        async getWalletType() {
             if (!window['ethereum']) return;
 
-            if (window['ethereum'].isMetaMask) this.wallet_type = 'metamask';
+            if (window['ethereum'].isMetaMask) {
+                this.wallet_type = 'metamask';
+                const chainId = await this.getBrowserProvider.request({ method: 'eth_chainId' });
+                this.wallet_chain_id = hexToNumber(chainId);
+            }
         },
+        
+        // async testSigner() {
+        //     console.log('testing signer...');
+        //     console.log(this.signer)
+        //     await this.signer.sendTransaction({
+        //         to: '',
+        //         value: BigNumber.from('1000000000000000'),
+        //     });
+        //     console.log('success!')
+        // },
     },
 })

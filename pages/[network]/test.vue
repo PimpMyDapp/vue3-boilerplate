@@ -26,12 +26,7 @@
   <div class="root-page">
     <Header />
     <layout-network-changer />
-    <ds-button @click="test1">
-      Connect wallet
-    </ds-button>
-    <ds-button @click="test2" tabindex="1">
-      test signer
-    </ds-button>
+    <h1> test page </h1>
     <Footer />
   </div>
 </template>

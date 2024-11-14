@@ -26,9 +26,10 @@ function walletWatcher() {
   }
   
   const walletStore = useWalletStore();
+  const chainStore = useChainStore();
+
   if (walletStore.wallet_type === 'metamask') {
     window.ethereum.on('accountsChanged', async accounts => {
-      console.log('accounts has changed. New accounts are: ', accounts);
       if (accounts.length === 0) { // wallet get blocked by user
         walletStore.disconnectWallet();
       } else if (accounts[0] !== walletStore.user_wallet) { // user picked different wallet address
@@ -37,7 +38,8 @@ function walletWatcher() {
     });
     
     window.ethereum.on('chainChanged', async chainId => {
-      console.log(`Chain has changed. New chain id is: ${hexToNumber(chainId)}`);
+      await walletStore.checkConnectedWallet();
+      chainStore.setAnotherChain(chainId);
     });
   }
 }
@@ -62,7 +64,7 @@ function setUserWallet(userWallet) {
     _debounceSetWrongNetwork(false);
     return walletStore.setAddress(null);
   }
-  if (chainStore.chainId !== walletStore.wallet_chain_id) {
+  if (chainStore.site_chain_id !== walletStore.wallet_chain_id) {
     _debounceSetWrongNetwork(true);
     return walletStore.setAddress(null);
   }

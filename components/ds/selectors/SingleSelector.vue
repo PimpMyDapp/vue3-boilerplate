@@ -79,6 +79,11 @@ export default {
         this.handleDefault();
       },
       immediate: true,
+    },
+    options: {
+      handler() {
+        this.handleDefault();
+      },
     }
   },
 
@@ -87,7 +92,7 @@ export default {
       if (this.defaultPicked && this.options.length) {
         const optionElement = this.options.find(option => option.value === this.defaultPicked);
         if (optionElement) {
-          this.handleChange(optionElement)
+          this.handleChange(optionElement, true)
         }
       } else if (this.selected.value && !this.defaultPicked) {
         this.selected = {};
@@ -99,11 +104,11 @@ export default {
     closeDropdown() {
       this.isOpen = false;
     },
-    handleChange(option) {
+    handleChange(option, isDefaultCall = false) {
       this.closeDropdown();
       if (this.selected.value === option.value) return;
       this.selected = option;
-      this.$emit('change', this.selected);
+      if (!isDefaultCall) this.$emit('change', this.selected);
     },
   },
 };

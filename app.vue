@@ -1,5 +1,8 @@
 <template>
-  <NuxtPage />
+<!-- this div wrapper prevents error on hot reload. Dont touch!  -->
+  <div>
+    <NuxtPage />
+  </div>
 </template>
 
 <script setup>

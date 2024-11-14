@@ -1,6 +1,6 @@
 <template>
   <div class="network-changer">
-    <ds-selectors-single-selector :options="networks" :default-picked="currentNetwork" />
+    <ds-selectors-single-selector :options="networks" :default-picked="currentNetwork" @change="handleNetChange" />
     <template v-if="!userWallet">
       <ds-button @click="connectWallet">
         Connect wallet
@@ -46,7 +46,17 @@ async function connectWallet() {
 }
 
 async function disconnectWallet() {
-  await walletStore.disconnectWallet();
+  walletStore.disconnectWallet();
+}
+
+async function handleNetChange({ value }) {
+  const { networkId } = chainStore.network_list.find(item => item.code === value);
+  chainStore.setAnotherChain(networkId);
+  if (chainStore.site_chain_id !== walletStore.wallet_chain_id) {
+    walletStore.disconnectWallet();
+  } else {
+    await walletStore.checkConnectedWallet();
+  }
 }
 </script>
 
