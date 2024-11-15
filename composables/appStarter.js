@@ -1,4 +1,4 @@
-import {startGlobalListeners} from '~/composables/globalListeners';
+import { startGlobalListeners } from '~/composables/globalListeners';
 import { useCoreStore } from '~/stores/coreStore';
 import { useChainStore } from '~/stores/networkAndWallet/chainManagementStore';
 import { useWalletStore } from '~/stores/networkAndWallet/walletStore';
@@ -7,6 +7,7 @@ import { useContractStore } from '~/stores/contracts/_contracts';
 import { watch } from 'vue';
 
 import networks from '~/downloads/menu.json';
+import {usePromiseStore} from '~/stores/_service/promisesStore';
 
 
 /**
@@ -20,6 +21,8 @@ function walletWatcher() {
   
   const walletStore = useWalletStore();
   const chainStore = useChainStore();
+  const contractStore = useContractStore();
+  const promises = usePromiseStore();
 
   if (walletStore.wallet_type === 'metamask') {
     window.ethereum.on('accountsChanged', async accounts => {
@@ -27,12 +30,16 @@ function walletWatcher() {
         walletStore.disconnectWallet();
       } else if (accounts[0] !== walletStore.user_wallet) { // user picked different wallet address
         await walletStore.checkConnectedWallet();
+        await contractStore.initBasicContracts();
       }
     });
     
     window.ethereum.on('chainChanged', async chainId => {
+      promises.clear('contractReady');
+      promises.clear('currentChainPicked');
       await walletStore.checkConnectedWallet();
       chainStore.setAnotherChain(chainId);
+      await contractStore.initBasicContracts();
     });
   }
 }
@@ -110,4 +117,5 @@ export async function startApp() {
   await walletStore.checkConnectedWallet();
   walletWatcher();
   await contractStore.initBasicContracts();
+  
 }

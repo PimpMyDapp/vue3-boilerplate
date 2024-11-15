@@ -30,7 +30,7 @@
       Connect wallet
     </ds-button>
     <ds-button @click="test2" tabindex="1">
-      remove contracts ready
+      send test tx
     </ds-button>
     <Footer />
   </div>
@@ -39,9 +39,11 @@
 <script setup>
 import { usePromiseStore } from '~/stores/_service/promisesStore';
 import { useWalletStore } from '~/stores/networkAndWallet/walletStore';
+import {useContractStore} from '~/stores/contracts/_contracts';
 
 const promises = usePromiseStore();
 const walletStore = useWalletStore();
+const contractStore = useContractStore();
 
 const localValue = ref(1);
 
@@ -50,7 +52,7 @@ async function test1() {
 }
 
 async function test2() {
-  promises.clear('contractReady');
+  contractStore.sendTx('Cvp', 'approve', ['0x54d8614c4fda84480e6452fec29e74452053c56d', '5000000000000000000']);
 }
 </script>
 

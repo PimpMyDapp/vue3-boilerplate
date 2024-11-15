@@ -1,4 +1,5 @@
 import { defineStore } from "pinia";
+import { usePromiseStore } from '~/stores/_service/promisesStore';
 
 export const useChainStore = defineStore("chainManagementStore", {
     state: () => {
@@ -17,6 +18,8 @@ export const useChainStore = defineStore("chainManagementStore", {
          * @param current_name - optional. Only required if current_network is not set.
          */
         async setList(networks, current_name) {
+            const promises = usePromiseStore();
+
             this.network_list = await Promise.all(networks.map(async item => {
                 const configPromise = await import(`~/downloads/${item.code}.json`);
                 const addresses = {};
@@ -45,6 +48,7 @@ export const useChainStore = defineStore("chainManagementStore", {
             }
 
             this.site_chain_id = this.current_network.networkId;
+            promises.resolve('currentChainPicked')
         },
         
         /**
@@ -54,10 +58,13 @@ export const useChainStore = defineStore("chainManagementStore", {
          * @param pushToAnotherRoute - if set to true (default) after a chain set it will also be pushed to new route.
          */
         setAnotherChain(chainId, pushToAnotherRoute = true) {
+            const promises = usePromiseStore();
+
             const anotherChain = this.network_list.find(item => item.networkId === +chainId);
             this.current_network = anotherChain;
             this.site_chain_id = +chainId;
             this.current_network_name = anotherChain.code;
+            promises.resolve('currentChainPicked');
 
             if (pushToAnotherRoute) {
                 const route = useRoute();
