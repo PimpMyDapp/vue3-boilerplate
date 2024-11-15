@@ -37,9 +37,9 @@ export const useChainStore = defineStore("chainManagementStore", {
                 }
             }));
             if (this.current_network_name) {
-                this.current_network = networks.find(item => item.code === this.current_network_name);
+                this.current_network = this.network_list.find(item => item.code === this.current_network_name);
             } else if (current_name) {
-                this.current_network = networks.find(item => item.code === current_name);
+                this.current_network = this.network_list.find(item => item.code === current_name);
             } else {
                 new Error('Error while setting current_network. Please provide current_name arg')
             }

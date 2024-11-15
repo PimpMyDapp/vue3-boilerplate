@@ -30,7 +30,7 @@
       Connect wallet
     </ds-button>
     <ds-button @click="test2" tabindex="1">
-      test signer
+      remove contracts ready
     </ds-button>
     <Footer />
   </div>
@@ -50,7 +50,7 @@ async function test1() {
 }
 
 async function test2() {
-  await walletStore.testSigner();
+  promises.clear('contractReady');
 }
 </script>
 

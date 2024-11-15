@@ -19,8 +19,8 @@ export const usePromiseStore = defineStore("promiseStore", {
 		 * If promise already fulfilled, returns it immediately.
 		 *
 		 * @param name - Required. Name of the promise.
-		 * @param callback - Optional. Will be called after promise resolve. Will be called once on fulfill.
-		 * If you want callback to fire everytime, use waitForForce method.
+		 * @param callback - Optional. It Will be called after promise resolve. Will be called once on fulfill.
+		 * If you want callback to fire every time, use waitForForce method.
 		 * @returns {Promise<*>}
 		 */
 		async waitFor(name, callback = null) {
@@ -33,7 +33,7 @@ export const usePromiseStore = defineStore("promiseStore", {
 		 * Subscribe caller to a promise.
 		 * Always creates fresh Promise. if existing was fulfilled before, it will be overwritten.
 		 * @param name - Required. Name of the promise.
-		 * @param callback - Optional. will be called after promise resolve. Will be called every time waitForForce is called.
+		 * @param callback - Optional. it will be called after promise resolve. Will be called every time waitForForce is called.
 		 * @returns {Promise<*>}
 		 */
 		async waitForForce(name, callback = null) {
@@ -46,9 +46,9 @@ export const usePromiseStore = defineStore("promiseStore", {
 		 * Resolves a promise. But only if it exists.
 		 * Otherwise, will fall silently
 		 * @param name - Required. Name of the promise.
-		 * @param callback - Optional. will be called after promise resolve.
+		 * @param callback - Optional. it will be called after promise resolve.
 		 */
-		resolve(name, callback) {
+		resolve(name, callback = null) {
 			if (!name) Error('Please provide promise name to resolve!');
 			
 			if (this.resolvers[name]) {
@@ -60,9 +60,9 @@ export const usePromiseStore = defineStore("promiseStore", {
 		},
 		
 		/**
-		 * Creates promise if it's not exist, so we can use it somewhere later.
+		 * Creates promise if it does not exist, so we can use it somewhere later.
 		 * @param name - Required. Name of the promise.
-		 * @param callback - Optional. will be called after promise resolve.
+		 * @param callback - Optional. it will be called after promise resolve.
 		 */
 		createIfNotExist(name, callback = null) {
 			if (!this.resolvers[name]) {
@@ -71,12 +71,23 @@ export const usePromiseStore = defineStore("promiseStore", {
 		},
 		
 		/**
+		 * Removes promise
+		 * @param name - promise id
+		 */
+		clear(name) {
+			if (this.resolvers[name]) {
+				delete this.resolvers[name];
+				delete this.promises[name];
+			}
+		},
+		
+		/**
 		 * DO NOT USE EXTERNALLY!
 		 *
-		 * Internal function that creates promise and its resolver.
+		 * Internal function that creates a promise and its resolver.
 		 * BE CAREFUL CALLING IT, IT WILL REWRITE EXISTING PROMISE.
 		 * @param name - name of the promise to create. Required.
-		 * @param callback - callback that will be called after fulfill.
+		 * @param callback - callback that will be called after fulfilling.
 		 *
 		 * @private
 		 */

@@ -2,18 +2,11 @@ import {startGlobalListeners} from '~/composables/globalListeners';
 import { useCoreStore } from '~/stores/coreStore';
 import { useChainStore } from '~/stores/networkAndWallet/chainManagementStore';
 import { useWalletStore } from '~/stores/networkAndWallet/walletStore';
-import { hexToNumber } from '~/composables/blockchainHelpers';
+import { useContractStore } from '~/stores/contracts/_contracts';
 
 import { watch } from 'vue';
 
-import debounce from 'lodash/debounce';
-
 import networks from '~/downloads/menu.json';
-
-const _debounceSetWrongNetwork = debounce((isWrongNetwork) => {
-  const walletStore = useWalletStore();
-  walletStore.wrong_network = isWrongNetwork;
-}, 2000);
 
 
 /**
@@ -50,7 +43,6 @@ function walletWatcher() {
  */
 function setUserWallet(userWallet) {
   const walletStore = useWalletStore();
-  const chainStore = useChainStore();
 
   if (walletStore.custom_wallet) {
     userWallet = walletStore.custom_wallet;
@@ -60,26 +52,7 @@ function setUserWallet(userWallet) {
     walletStore.last_user_wallet = walletStore.user_wallet;
   }
 
-  if (!chainStore.network_list.length || !walletStore.wallet_chain_id) {
-    _debounceSetWrongNetwork(false);
-    return walletStore.setAddress(null);
-  }
-  if (chainStore.site_chain_id !== walletStore.wallet_chain_id) {
-    _debounceSetWrongNetwork(true);
-    return walletStore.setAddress(null);
-  }
-  _debounceSetWrongNetwork(false);
   walletStore.setAddress(userWallet);
-}
-
-/**
- * Init web 3 manager and all its dependencies
- */
-async function initWeb3(network = null) {
-  const walletStore = useWalletStore();
-
-  await walletStore.checkConnectedWallet();
-  walletStore.wallet_loading = false;
 }
 
 /**
@@ -131,6 +104,10 @@ export function preStartApp() {
  * @returns {Promise<void>}
  */
 export async function startApp() {
-  await initWeb3();
+  const walletStore = useWalletStore();
+  const contractStore = useContractStore();
+  
+  await walletStore.checkConnectedWallet();
   walletWatcher();
+  await contractStore.initBasicContracts();
 }

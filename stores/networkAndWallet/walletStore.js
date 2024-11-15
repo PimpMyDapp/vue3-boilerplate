@@ -20,16 +20,7 @@ export const useWalletStore = defineStore("walletStore", {
 
             provider: null,
             signer: null,
-            
-            wrong_network: false,
-            wallet_loading: true,
         }
-    },
-
-    getters: {
-        getBrowserProvider() {
-            return window['ethereum'] ? window['ethereum'] : window['web3'] || {};
-        },
     },
 
     actions: {
@@ -159,7 +150,7 @@ export const useWalletStore = defineStore("walletStore", {
 
             if (window['ethereum'].isMetaMask) {
                 this.wallet_type = 'metamask';
-                const chainId = await this.getBrowserProvider.request({ method: 'eth_chainId' });
+                const chainId = await window['ethereum'].request({ method: 'eth_chainId' });
                 this.wallet_chain_id = hexToNumber(chainId);
             }
         },
