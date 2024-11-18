@@ -13,6 +13,7 @@ export const useWalletStore = defineStore("walletStore", {
     state: () => {
         return {
             wallet_type: '',
+            last_connected_wallet_type: useLocalStorage('last-wallet-type', ''),
             user_wallet: null,
             custom_wallet: useLocalStorage('custom-wallet', ''),
             last_user_wallet: null,
@@ -65,8 +66,10 @@ export const useWalletStore = defineStore("walletStore", {
          *
          * @returns {Promise<void>}
          */
-        async connectWallet() {
-            if (!window['ethereum']) return;
+        async connectWallet(walletType) {
+            if (!window['ethereum']) throw Error('Failed to detect any wallet. Please install metamask and update page.');
+            this.last_connected_wallet_type = walletType;
+            await this.getWalletType();
 
             const chainStore = useChainStore();
             const timersStore = useTimersStore();
@@ -75,9 +78,9 @@ export const useWalletStore = defineStore("walletStore", {
             if (this.wallet_chain_id !== chainStore.site_chain_id && !timersStore.networkIsChanging) {
                 timersStore.networkIsChanging = true;
                 await this.switchChain(chainStore.site_chain_id);
-                await this.connectWallet();
+                await this.connectWallet(walletType);
                 timersStore.networkIsChanging = false;
-                // recursive call was made, so that call must end.
+                // recursive call was made, so that one must end.
                 return;
             }
 
@@ -148,21 +151,15 @@ export const useWalletStore = defineStore("walletStore", {
         async getWalletType() {
             if (!window['ethereum']) return;
 
-            if (window['ethereum'].isMetaMask) {
+            if (this.last_connected_wallet_type === 'metamask') {
                 this.wallet_type = 'metamask';
-                const chainId = await window['ethereum'].request({ method: 'eth_chainId' });
-                this.wallet_chain_id = hexToNumber(chainId);
+                if (window['ethereum'].isMetaMask) {
+                    const chainId = await window['ethereum'].request({ method: 'eth_chainId' });
+                    this.wallet_chain_id = hexToNumber(chainId);
+                } else {
+                    console.error('Metamask is not loaded!')
+                }
             }
         },
-        
-        // async testSigner() {
-        //     console.log('testing signer...');
-        //     console.log(this.signer)
-        //     await this.signer.sendTransaction({
-        //         to: '',
-        //         value: BigNumber.from('1000000000000000'),
-        //     });
-        //     console.log('success!')
-        // },
     },
 })

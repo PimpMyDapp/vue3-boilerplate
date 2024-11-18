@@ -2,7 +2,7 @@
   <footer>
     <div class="main-container">
       <div class="copyright text-sm">
-        {{ getCopyright }}
+        CRYPTOLEGACY {{ currentYear }}
       </div>
       <div v-if="getLinks && getLinks.length" class="follow">
         <span class="text-sm">FOLLOW US</span>
@@ -15,29 +15,9 @@
 </template>
 
 <script setup>
-const props = defineProps({
-  type: {
-    type: String,
-    default: '',
-  }
-})
-
 const currentYear = new Date().getFullYear();
 
 const getLinks = computed(() => {
-  if (props.type === 'legacy') {
-    return [
-      {
-        icon: 'github-16',
-        link: 'https://github.com/CryptoCust',
-      },
-      {
-        icon: 'twitter-16',
-        link: 'https://x.com/0xcust',
-      }
-    ]
-  }
-
   return [
     {
       icon: 'github-16',
@@ -50,13 +30,6 @@ const getLinks = computed(() => {
   ]
 });
 
-const getCopyright = computed(() => {
-  if (props.type === 'legacy') {
-    return `CRYPTOLEGACY ${currentYear}`
-  }
-
-  return `CRYPTOCUSTOMS ${currentYear}`
-})
 </script>
 
 <style lang="scss" scoped>

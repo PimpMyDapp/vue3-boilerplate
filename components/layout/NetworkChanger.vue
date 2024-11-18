@@ -42,7 +42,7 @@ const userWallet = computed(() => {
 
 // methods
 async function connectWallet() {
-  await walletStore.connectWallet();
+  await walletStore.connectWallet('metamask');
 }
 
 async function disconnectWallet() {

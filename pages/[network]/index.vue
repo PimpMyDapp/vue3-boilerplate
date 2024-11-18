@@ -48,7 +48,11 @@ const contractStore = useContractStore();
 const localValue = ref(1);
 
 async function test1() {
-  await walletStore.connectWallet();
+  try {
+    await walletStore.connectWallet('metamask');
+  } catch (e) {
+    console.log(e.message);
+  }
 }
 
 async function test2() {

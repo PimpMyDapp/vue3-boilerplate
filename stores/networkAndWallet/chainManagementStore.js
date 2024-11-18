@@ -8,6 +8,7 @@ export const useChainStore = defineStore("chainManagementStore", {
             network_list: [],
             current_network: null,
             current_network_name: '',
+            chain_white_list: [], // if any ids here, then only those networks will be loaded
         }
     },
 
@@ -19,6 +20,10 @@ export const useChainStore = defineStore("chainManagementStore", {
          */
         async setList(networks, current_name) {
             const promises = usePromiseStore();
+            // filter by whitelist if there is any
+            if (this.chain_white_list.length) {
+                networks = networks.filter(net => this.chain_white_list.includes(net.networkId));
+            }
 
             this.network_list = await Promise.all(networks.map(async item => {
                 const configPromise = await import(`~/downloads/${item.code}.json`);
