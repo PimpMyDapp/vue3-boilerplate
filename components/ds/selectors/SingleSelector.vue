@@ -1,9 +1,16 @@
 <template>
-  <div class="ds-single-selector">
+  <div class="ds-single-selector" :class="{'_disabled': disabled}">
+    <div v-if="label || subLabel" class="labels text-sm">
+      <div v-if="label" class="label">
+        {{ label }}
+<!--        <ds-hint v-if="hint" :text="hint" />-->
+      </div>
+      <div v-if="subLabel" class="sub-label">{{ subLabel }}</div>
+    </div>
     <OnClickOutside @trigger="closeDropdown">
       <div class="dropdown-selected" :class="{'_passive': passive}" @click="toggleDropdown">
-        <div class="dropdown-selected-zone">
-          <div v-if="!selected.value">
+        <div class="dropdown-selected-zone text-md">
+          <div v-if="!selected.value" class="placeholder">
             {{ placeholder }}
           </div>
           <div v-else class="selected-item">
@@ -11,14 +18,14 @@
             <span v-html="selected.text" />
           </div>
         </div>
-        <pp-icon
+        <ds-icon
             v-if="!passive"
             class="arrow"
             name="shevron-down-24"
             :class="{'_active': isOpen}"
         />
       </div>
-      <div v-if="isOpen && !passive" class="dropdown-container" :style="freeDropdown ? 'width: auto; max-width: 100%;' : ''">
+      <div v-if="isOpen && !passive" class="dropdown-container text-md" :style="freeDropdown ? 'width: auto; max-width: 100%;' : ''">
         <div class="dropdown-menu">
           <div
               class="dropdown-item"
@@ -29,6 +36,7 @@
           >
             <img v-if="option.icon" class="icon" :src="option.icon">
             <span v-html="option.text"/>
+            <ds-icon v-if="option.value === selected.value" class="check" name="check-16" />
           </div>
         </div>
       </div>
@@ -45,6 +53,22 @@ export default {
     OnClickOutside
   },
   props: {
+    label: {
+      type: String,
+      default: '',
+    },
+    subLabel: {
+      type: String,
+      default: '',
+    },
+    hint: {
+      type: String,
+      default: '',
+    },
+    disabled: {
+      type: Boolean,
+      default: false,
+    },
     placeholder: {
       type: String,
       default: 'Select option',
@@ -99,7 +123,9 @@ export default {
       }
     },
     toggleDropdown() {
-      this.isOpen = !this.isOpen;
+      if (!this.disabled) {
+        this.isOpen = !this.isOpen;
+      }
     },
     closeDropdown() {
       this.isOpen = false;
@@ -118,23 +144,114 @@ export default {
 .ds-single-selector {
   z-index: 10;
   position: relative;
+  display: inline-block;
   color: white;
+
+  .labels {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+
+    .sub-label {
+      color: $white-500;
+    }
+  }
+
+  &._disabled {
+    .labels {
+      .label,
+      .sub-label {
+        color: $white-300;
+      }
+    }
+
+    .dropdown-selected {
+      cursor: default;
+      border: 1px solid $black-700 !important;
+      background: $black !important;
+      color: $white-300 !important;
+
+      .arrow {
+        color: $white-300 !important;
+      }
+
+      img {
+       opacity: .5;
+      }
+    }
+
+    .selected-item {
+      color: $white-300 !important;
+    }
+  }
 }
 
 .dropdown-selected {
-  padding: 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 8px 8px 12px;
   border: 1px solid $black-700;
+  background-color: $black-900;
+  transition: border .2s;
+  cursor: pointer;
+
+  .arrow {
+    margin-left: auto;
+    color: $white-500;
+    transition: transform .2s;
+
+    &._active {
+      transform: rotate(180deg);
+    }
+  }
+
+  &:hover {
+    border-color: $black-500;
+  }
+}
+
+.selected-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  img {
+    width: 16px;
+    height: 16px;
+  }
 }
 
 .dropdown-menu {
   position: absolute;
-  top: 100%;
-  left: 0;
+  top: calc(100% + 8px);
+  right: 0;
+  padding: 8px 0;
   background-color: $black;
+  border: 1px solid $black-700;
 }
 
 .dropdown-item {
-  padding: 16px;
-  border-bottom: 1px solid $black-700;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px;
+
+  img {
+    width: 16px;
+    height: 16px;
+  }
+
+  &:hover:not(._picked) {
+    background-color: $black-700;
+    cursor: pointer;
+  }
+
+  .check {
+    margin-left: auto;
+    color: $white-500;
+    margin-right: 2px;
+  }
 }
 </style>

@@ -2,7 +2,7 @@ import { ethers } from 'ethers';
 import { useWalletStore } from '~/stores/networkAndWallet/walletStore';
 
 /**
- * This method is used to initialise contract method with ethers.
+ * This method is used to initialize contract method with ethers.
  *
  * @param address - Required. Contract address.
  * @param abi - Required. Abi of the contract.

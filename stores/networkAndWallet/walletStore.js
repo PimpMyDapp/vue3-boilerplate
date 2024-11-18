@@ -7,7 +7,7 @@ import { usePromiseStore } from '~/stores/_service/promisesStore';
 import { useChainStore } from '~/stores/networkAndWallet/chainManagementStore';
 import { useTimersStore } from '~/stores/_service/timersStore';
 
-import {numberToHex, hexToNumber} from '~/composables/blockchainHelpers';
+import {numberToHex, hexToNumber} from '~/composables/helpers/blockchainHelpers';
 
 export const useWalletStore = defineStore("walletStore", {
     state: () => {

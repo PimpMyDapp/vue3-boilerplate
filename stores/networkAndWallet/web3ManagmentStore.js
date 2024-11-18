@@ -4,7 +4,7 @@ import { markRaw } from 'vue';
 import { providers } from 'ethers';
 
 import includes from 'lodash/includes';
-import { hexToNumber } from '~/composables/blockchainHelpers';
+import { hexToNumber } from '~/composables/helpers/blockchainHelpers';
 
 import {useWalletStore} from '~/stores/networkAndWallet/walletStore';
 

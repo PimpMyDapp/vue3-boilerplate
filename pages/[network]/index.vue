@@ -25,7 +25,6 @@
   </Head>
   <div class="root-page">
     <Header />
-    <layout-network-changer />
     <ds-button @click="test1">
       Connect wallet
     </ds-button>

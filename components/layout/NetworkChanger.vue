@@ -1,16 +1,20 @@
 <template>
   <div class="network-changer">
-    <ds-selectors-single-selector :options="networks" :default-picked="currentNetwork" @change="handleNetChange" />
+    <ds-selectors-single-selector
+        :options="networks"
+        :default-picked="currentNetwork"
+        @change="handleNetChange"
+    />
     <template v-if="!userWallet">
       <ds-button @click="connectWallet">
         Connect wallet
       </ds-button>
     </template>
     <template v-else>
-      Current wallet is: {{ userWallet }}
-      <ds-button @click="disconnectWallet">
-        Disconnect wallet
-      </ds-button>
+      <div class="picked-panel">
+        <img src="/wallets/metamask.png">
+        <ds-hex :hex="userWallet" />
+      </div>
     </template>
   </div>
 </template>
@@ -26,6 +30,7 @@ const walletStore = useWalletStore();
 const networks = computed(() => {
   const list = chainStore.network_list;
   return list.map(item => ({
+    icon: `/networks/${item.code}.png`,
     value: item.code,
     text: item.title,
   }));
@@ -62,7 +67,26 @@ async function handleNetChange({ value }) {
 
 <style lang="scss" scoped>
 .network-changer {
-  margin-bottom: 300px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
   color: $white;
+}
+
+.picked-panel {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  padding: 8px 12px 8px 8px;
+  border: 1px solid $black-700;
+  background-color: $black-900;
+
+  img {
+    height: 18px;
+  }
+}
+
+::v-deep(.dropdown-item) {
+  width: 250px;
 }
 </style>

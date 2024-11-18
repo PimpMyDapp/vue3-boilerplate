@@ -2,6 +2,7 @@
   <header>
     <div class="main-container">
       <img class="logo" :style="`height: ${getLogo.height}`" src="/logo.png">
+      <layout-network-changer />
     </div>
   </header>
 </template>
@@ -39,8 +40,8 @@ const getLogo = {
       display: flex;
       justify-content: space-between;
       width: 100%;
-      padding-top: 24px;
-      padding-bottom: 24px;
+      padding-top: 12px;
+      padding-bottom: 12px;
     }
   }
 </style>
