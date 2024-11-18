@@ -8,7 +8,7 @@ export function useEventListener(target, event, callback) {
 
 export function startGlobalListeners() {
     const coreStore = useCoreStore();
-    // check if app tab is active and set required
+    // check if the app tab is active
     useEventListener(document, "visibilitychange", () => {
         coreStore.checkTabStatus();
     })

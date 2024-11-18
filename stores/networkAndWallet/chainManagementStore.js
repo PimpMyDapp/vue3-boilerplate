@@ -18,7 +18,7 @@ export const useChainStore = defineStore("chainManagementStore", {
          * @param networks - list of networks to set
          * @param current_name - optional. Only required if current_network is not set.
          */
-        async setList(networks, current_name) {
+        async setList(networks, current_name = '') {
             const promises = usePromiseStore();
             // filter by whitelist if there is any
             if (this.chain_white_list.length) {
