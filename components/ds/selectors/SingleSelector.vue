@@ -3,7 +3,7 @@
     <div v-if="label || subLabel" class="labels text-sm">
       <div v-if="label" class="label">
         {{ label }}
-<!--        <ds-hint v-if="hint" :text="hint" />-->
+        <!--        <ds-hint v-if="hint" :text="hint" />-->
       </div>
       <div v-if="subLabel" class="sub-label">{{ subLabel }}</div>
     </div>
@@ -177,7 +177,7 @@ export default {
       }
 
       img {
-       opacity: .5;
+        opacity: .5;
       }
     }
 
@@ -196,6 +196,10 @@ export default {
   background-color: $black-900;
   transition: border .2s;
   cursor: pointer;
+
+  &._passive {
+    padding-right: 16px;
+  }
 
   .arrow {
     margin-left: auto;
